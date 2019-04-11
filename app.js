@@ -72,7 +72,10 @@ app.post('/todos', (req, res) => {
 
 // 顯示一筆 Todo 的詳細內容
 app.get('/todos/:id', (req, res) => {
-  res.send('顯示 Todo 的詳細內容')
+  Todo.findById(req.params.id, (err, todo) => {
+    if (err) return console.error(err)
+    return res.render('detail', { todo: todo })
+  })
 })
 
 
