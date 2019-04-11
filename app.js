@@ -3,6 +3,14 @@ const app = express()                                     // 啟用 express
 
 const mongoose = require('mongoose')                    // 載入 mongoose
 
+// 引用 express-handlebars
+const exphbs = require('express-handlebars');
+
+
+// 告訴 express 使用 handlebars 當作 template engine 並預設 layout 是 main
+app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
+app.set('view engine', 'handlebars')
+
 // 加上 { useNewUrlParser: true }
 mongoose.connect('mongodb://localhost/todo', { useNewUrlParser: true })
 // 設定連線到 mongoDB
@@ -24,9 +32,10 @@ db.once('open', () => {
 const Todo = require('./models/todo')
 
 // 設定路由
+
 // Todo 首頁
 app.get('/', (req, res) => {
-  res.send('hello world!')
+  return res.render('index')
 })
 
 // 列出全部 Todo
