@@ -6,6 +6,12 @@ const mongoose = require('mongoose')                    // 載入 mongoose
 // 引用 express-handlebars
 const exphbs = require('express-handlebars');
 
+// 引用 body-parser
+const bodyParser = require('body-parser');
+
+// 設定 bodyParser
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 // 告訴 express 使用 handlebars 當作 template engine 並預設 layout 是 main
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
@@ -35,7 +41,10 @@ const Todo = require('./models/todo')
 
 // Todo 首頁
 app.get('/', (req, res) => {
-  return res.render('index')
+  Todo.find((err, todos) => {                                 // 把 Todo model 所有的資料都抓回來
+    if (err) return console.error(err)
+    return res.render('index', { todos: todos })  // 將資料傳給 index 樣板
+  })
 })
 
 // 列出全部 Todo
@@ -45,18 +54,27 @@ app.get('/todos', (req, res) => {
 
 // 新增一筆 Todo 頁面
 app.get('/todos/new', (req, res) => {
-  res.send('新增 Todo 頁面')
+  return res.render('new')
 })
+
+// 新增一筆  Todo
+app.post('/todos', (req, res) => {
+  const todo = Todo({
+    name: req.body.name,                       // name 是從 new 頁面 form 傳過來
+  })
+
+  todo.save(err => {
+    if (err) return console.error(err)
+    return res.redirect('/')                        // 新增完成後，將使用者導回首頁
+  })
+})
+
 
 // 顯示一筆 Todo 的詳細內容
 app.get('/todos/:id', (req, res) => {
   res.send('顯示 Todo 的詳細內容')
 })
 
-// 新增一筆  Todo
-app.post('/todos', (req, res) => {
-  res.send('建立 Todo')
-})
 
 // 修改 Todo 頁面
 app.get('/todos/:id/edit', (req, res) => {
