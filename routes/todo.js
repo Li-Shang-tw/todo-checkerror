@@ -1,10 +1,7 @@
-//引入express,並使用Router
+// routes/todo.js
 const express = require('express')
-const router = express.Route()
-//引入models來連結用資料庫
+const router = express.Router()
 const Todo = require('../models/todo')
-
-
 // 設定 /todos 路由
 
 // 列出全部 Todo

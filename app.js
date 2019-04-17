@@ -60,6 +60,7 @@ app.get('/', (req, res) => {
 // 載入路由器
 app.use('/', require('./routes/home'))
 app.use('/todos', require('./routes/todo'))
+app.use('/users', require('./routes/user'))        // 新增的 user 路由器 
 
 
 // 設定 express port 3000
