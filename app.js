@@ -15,6 +15,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // 引用 method-override
 const methodOverride = require('method-override')
 
+// 載入 express-session 與 passport
+const session = require('express-session')
+const passport = require('passport')
 
 // 告訴 express 使用 handlebars 當作 template engine 並預設 layout 是 main
 app.engine('handlebars', exphbs({ defaultLayout: 'main' }))
@@ -40,21 +43,24 @@ db.once('open', () => {
   console.log('mongodb connected!')
 })
 
-// 載入 todo model
-const Todo = require('./models/todo')
+// 使用 express session 
+app.use(session({
+  secret: 'your secret key',                // secret: 定義一組自己的私鑰（字串)
+}))
+// 使用 Passport 
+app.use(passport.initialize())
+app.use(passport.session())
 
-// 設定路由
-
-// Todo 首頁
-app.get('/', (req, res) => {
-  Todo.find({})
-    .sort({ 'name': 'asc' })
-    .exec((err, todos) => {                                 // 把 Todo model 所有的資料都抓回來
-      if (err) return console.error(err)
-      return res.render('index', { todos: todos })  // 將資料傳給 index 樣板
-    })
+// 載入 Passport config
+require('./config/passport')(passport)
+// 登入後可以取得使用者的資訊方便我們在 view 裡面直接使用
+app.use((req, res, next) => {
+  res.locals.user = req.user
+  next()
 })
 
+// 載入 todo model
+const Todo = require('./models/todo')
 
 // 設定路由
 // 載入路由器
